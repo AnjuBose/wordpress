@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  db:
+    image: mariadb:11
+    container_name: wp_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wp_passw0rd
+    volumes:
+      - db_data:/var/lib/mysql
+ 
+  wordpress:
+    image: wordpress:latest   # or build: . if you have a Dockerfile
+    container_name: wp_app
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    environment:
+      WORDPRESS_DB_HOST: wp_db:3306
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wp_passw0rd
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
+    restart: unless-stopped
+ 
+volumes:
+  db_data:
+ 
